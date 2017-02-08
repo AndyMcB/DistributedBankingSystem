@@ -32,7 +32,7 @@ public class BankServer implements OperationsInterface {
             System.setSecurityManager(new SecurityManager());
         }
         try {
-            String name = "Compute";
+            String name = "BankServer";
             BankServer engine = new BankServer();
             OperationsInterface stub =
                     (OperationsInterface) UnicastRemoteObject.exportObject(engine, 0);
