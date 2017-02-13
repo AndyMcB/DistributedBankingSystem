@@ -2,6 +2,7 @@ package interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import bank.Statement;
 
 /**
  * Created by AMCBR on 06/02/2017.

@@ -1,3 +1,5 @@
+package bank;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,9 +31,9 @@ public class Statement {
         c.setTime(pastDate);
         c.add(Calendar.MONTH, -3);
 
-        return c.getTime();} // returns start Date of Statement
+        return c.getTime();} // returns start Date of bank.Statement
 
-    public Date getEndDate(){return new Date();} // returns end Date of Statement
+    public Date getEndDate(){return new Date();} // returns end Date of bank.Statement
 
     public String getAccoutName(){return "";} // returns name of account holder
 
