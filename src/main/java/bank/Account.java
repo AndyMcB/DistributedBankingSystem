@@ -1,6 +1,7 @@
 package bank;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by AMCBR on 13/02/2017.
@@ -11,6 +12,7 @@ public class Account implements Serializable{
     static int counter = 0;
     String name, password;
     int balance, accountNum;
+    ArrayList<Transaction> transactions = new ArrayList<>();
 
     public Account(String nme, String pass, int bal){
         this.name = nme;
@@ -20,20 +22,21 @@ public class Account implements Serializable{
         counter = counter++;
     }
 
+    public void depositTransaction(Transaction t){
+        this.balance = this.balance + t.getAmount();
+
+    }
+
+    public void withdrawTransaction(Transaction t){
+        this.balance = this.balance - t.getAmount();
+
+    }
     public static int getAccNum() {
         return accNum;
     }
 
     public static void setAccNum(int accNum) {
         Account.accNum = accNum;
-    }
-
-    public static int getCounter() {
-        return counter;
-    }
-
-    public static void setCounter(int counter) {
-        Account.counter = counter;
     }
 
     public String getName() {
@@ -67,4 +70,7 @@ public class Account implements Serializable{
     public void setAccountNum(int accountNum) {
         this.accountNum = accountNum;
     }
+
+
+
 }

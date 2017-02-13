@@ -2,20 +2,22 @@ package bank;
 
 import interfaces.OperationsInterface;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 /**
  * Created by AMCBR on 06/02/2017.
  */
 public class BankServer extends UnicastRemoteObject implements OperationsInterface {
 
+    static String rmiName = "BankServer";
+    static private int rmiPort = 8000;
     private ArrayList<Account> users = new ArrayList<Account>();
-
+    static Account activeAcc;
 
     public BankServer() throws RemoteException {
         super();
@@ -29,33 +31,46 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
         users.add(a3);
     }
 
-    public boolean login(String usr, String pass) {
+    public Account login(String usr, String pass) {
 
         for(Account a : users)
             if(a.getName().equals(usr) && a.getPassword().equals(pass))
-                return true;
+                return a;
 
-        return false;
+        return null;
 
     }
 
     public void deposit(int amt) {
-
+        System.out.println("Old Balance: "+ activeAcc.getBalance());
+        Transaction t = new Transaction(amt, activeAcc.getAccountNum());
+        activeAcc.depositTransaction(t);
+        System.out.println("New Balance: "+ activeAcc.getBalance());
     }
 
     public void withdraw(int amt) {
-
+        System.out.println("withdraw");
+        Transaction t = new Transaction(amt, activeAcc.getAccountNum());
+        activeAcc.withdrawTransaction(t);
+        System.out.println("Old Balance: "+ activeAcc.getBalance());
     }
 
     public void getBalance() {
-
+        System.out.println("balance");
+        System.out.println("Balance: "+ activeAcc.getBalance());
     }
 
     public Statement getStatement() {
-
+        System.out.println("statement");
+        //System.out.println(activeAcc.get());
 
         return null;
     }
+
+    public void exit() throws RemoteException, NotBoundException {
+        System.exit(0);
+    }
+
 
     public static void main(String[] args) { //CLI Args: Name, Password, Option
 
@@ -64,54 +79,26 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
         try {
 
             //Set up RMI server
-            String name = "BankServer";
+
             OperationsInterface bank = new BankServer();
-            Registry registry = LocateRegistry.createRegistry(8000);
-            registry.rebind(name, bank);
+            Registry registry = LocateRegistry.createRegistry(rmiPort);
+            registry.rebind(rmiName, bank);
             System.out.println("BankServer bound");
 
 
-            checkArgs(args);
-            bank.login(args[0], args[1]);
-            boolean running = true;
-            while(running){
-                System.out.println("Please enter an option: (deposit / withdraw / balance / statement / exit)");
-                Scanner input = new Scanner(System.in);
-                String operation = input.next();
+            checkArgs(args); //Makes sure there are enough args, if not will throw an error
 
-                switch(operation.trim().toLowerCase()){
+            if ((bank.login(args[0], args[1])) == null ) {
+                System.out.println("Invalid Credentials!");
+                System.exit(0);
 
-                    case "deposit":
-                        System.out.println("Enter an amount to deposit");
-                        break;
-
-                    case "withdraw":
-                        System.out.println("Enter an amount to withdraw");
-                        break;
-
-                    case "balance":
-                        System.out.println("Your balance is €");
-                        break;
-
-                    case "statement":
-                        System.out.println("Displaying statement:");
-                        break;
-
-                    case "exit":
-                        System.out.println("Have a nice day");
-                        System.exit(0);
-
-                    default:
-                        System.out.println("Input not recognised, please try again");
-                        break;
-
-
-                }
+                //TODO - add option to resubmit username and password
+            }else{
+                activeAcc = bank.login(args[0], args[1]);
             }
 
-        } catch (Exception e) {
-            System.err.println("BankServer exception:");
-            e.printStackTrace();
+        } catch (Exception  e1) {
+            e1.printStackTrace();
         }
     }
 
