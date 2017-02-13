@@ -21,7 +21,7 @@ public class Statement {
 
     }
 
-    public int getAccountnum(){return 0;}  // returns account number associated with this statement
+    public int getAccountNum(){return 0;}  // returns account number associated with this statement
 
     public Date getStartDate(){ //Gets start data of transaction for the period of 3 months before the current date
 

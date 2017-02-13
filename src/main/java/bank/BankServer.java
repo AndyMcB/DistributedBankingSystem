@@ -6,54 +6,90 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by AMCBR on 06/02/2017.
  */
 public class BankServer extends UnicastRemoteObject implements OperationsInterface {
 
-    protected BankServer() throws RemoteException {
+    private ArrayList<Account> users = new ArrayList<Account>();
+
+
+    public BankServer() throws RemoteException {
         super();
 
+        Account a1 = new Account("user1","password1", 100);
+        Account a2 = new Account("user2","password2", 250);
+        Account a3 = new Account("user3","password3", 500);
+
+        users.add(a1);
+        users.add(a2);
+        users.add(a3);
     }
 
-    public void login() {
-        System.out.println("test works");
+    public boolean login(String usr, String pass) {
+
+        for(Account a : users)
+            if(a.getName().equals(usr) && a.getPassword().equals(pass))
+                return true;
+
+        return false;
+
     }
 
-    public void deposit() {
-        System.out.println("test works");
+    public void deposit(int amt) {
+
     }
 
-    public void withdraw() {
-        System.out.println("test works");
+    public void withdraw(int amt) {
+
     }
 
     public void getBalance() {
-        System.out.println("test works");
+
     }
 
     public Statement getStatement() {
 
-        System.out.println("test works");
+
         return null;
     }
 
-    public static void main(String[] args) {
-       // if (System.getSecurityManager() == null) {
-       //     System.setSecurityManager(new SecurityManager());
-       // }
+    public static void main(String[] args) { //CLI Args: Name, Password, Option
+
+        String user, pass;
+
         try {
+
             String name = "BankServer";
-            //BankServer engine = new BankServer();
-            //OperationsInterface bank = (OperationsInterface) UnicastRemoteObject.exportObject(engine, 0);
             OperationsInterface bank = new BankServer();
             Registry registry = LocateRegistry.createRegistry(8000);
             registry.rebind(name, bank);
-            System.out.println("ComputeEngine bound");
+            System.out.println("BankServer bound");
+
+            bank.login(args[0], args[1]);
+            boolean running = true;
+            while(running){
+                Scanner input = new Scanner(System.in);
+            }
         } catch (Exception e) {
-            System.err.println("ComputeEngine exception:");
+            System.err.println("BankServer exception:");
             e.printStackTrace();
         }
     }
+
+    private static String getArgs(String[] args){
+
+        for(int i=0; i<args.length; i++)
+            System.out.println(args[i] + "\n" + args.length);
+
+
+        if (args.length > 2){
+
+        }
+
+    }
+
 }

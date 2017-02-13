@@ -9,9 +9,9 @@ import bank.Statement;
  */
 public interface OperationsInterface extends Remote {
 
-    public void login() throws RemoteException;
-    public void deposit() throws RemoteException;
-    public void withdraw() throws RemoteException;
+    public boolean login(String usr, String pass) throws RemoteException;
+    public void deposit(int amt) throws RemoteException;
+    public void withdraw(int amt) throws RemoteException;
     public void getBalance() throws RemoteException;
     public Statement getStatement() throws RemoteException;
 
