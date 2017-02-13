@@ -63,31 +63,66 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
 
         try {
 
+            //Set up RMI server
             String name = "BankServer";
             OperationsInterface bank = new BankServer();
             Registry registry = LocateRegistry.createRegistry(8000);
             registry.rebind(name, bank);
             System.out.println("BankServer bound");
 
+
+            checkArgs(args);
             bank.login(args[0], args[1]);
             boolean running = true;
             while(running){
+                System.out.println("Please enter an option: (deposit / withdraw / balance / statement / exit)");
                 Scanner input = new Scanner(System.in);
+                String operation = input.next();
+
+                switch(operation.trim().toLowerCase()){
+
+                    case "deposit":
+                        System.out.println("Enter an amount to deposit");
+                        break;
+
+                    case "withdraw":
+                        System.out.println("Enter an amount to withdraw");
+                        break;
+
+                    case "balance":
+                        System.out.println("Your balance is €");
+                        break;
+
+                    case "statement":
+                        System.out.println("Displaying statement:");
+                        break;
+
+                    case "exit":
+                        System.out.println("Have a nice day");
+                        System.exit(0);
+
+                    default:
+                        System.out.println("Input not recognised, please try again");
+                        break;
+
+
+                }
             }
+
         } catch (Exception e) {
             System.err.println("BankServer exception:");
             e.printStackTrace();
         }
     }
 
-    private static String getArgs(String[] args){
+    private static void checkArgs(String[] args) throws Exception {
 
         for(int i=0; i<args.length; i++)
             System.out.println(args[i] + "\n" + args.length);
 
 
-        if (args.length > 2){
-
+        if (args.length < 2){
+            throw new Exception(); //TODO - create custom error
         }
 
     }

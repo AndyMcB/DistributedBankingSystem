@@ -16,15 +16,16 @@ public class ATM implements OperationsInterface {
     static OperationsInterface bank;
     static Registry registry;
 
-    public void login() {
+
+    public boolean login(String usr, String pass) throws RemoteException {
+        return false;
+    }
+
+    public void deposit(int amt) throws RemoteException {
 
     }
 
-    public void deposit() {
-
-    }
-
-    public void withdraw() {
+    public void withdraw(int amt) throws RemoteException {
 
     }
 
@@ -45,12 +46,12 @@ public class ATM implements OperationsInterface {
         if(bank != null)
             System.out.println("bank created");
 
+//        bank.deposit();
+//        bank.withdraw();
+//        bank.getBalance();
+//        bank.getStatement();
+//        bank.login();
 
-        bank.login();
-        bank.deposit();
-        bank.withdraw();
-        bank.getBalance();
-        bank.getStatement();
     }
 
 }
