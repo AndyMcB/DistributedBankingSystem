@@ -1,7 +1,10 @@
+package atm;
+import
+
 /**
  * Created by AMCBR on 06/02/2017.
  */
-public class ATM implements OperationsInterface {
+public class ATM implements interfaces.OperationsInterface {
 
     public void login() {
 
