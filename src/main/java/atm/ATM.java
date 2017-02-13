@@ -40,18 +40,17 @@ public class ATM implements OperationsInterface {
         String name = "BankServer";
 
         registry = LocateRegistry.getRegistry(8000);
-        if (registry != null)
-            System.out.println("registry found");
 
-        for(String s : registry.list())
-            System.out.println(s);
-
-
-        bank = (OperationsInterface) registry.lookup("Bank");
+        bank = (OperationsInterface) registry.lookup(name);
         if(bank != null)
             System.out.println("bank created");
 
-        System.out.println("");
+
+        bank.login();
+        bank.deposit();
+        bank.withdraw();
+        bank.getBalance();
+        bank.getStatement();
     }
 
 }

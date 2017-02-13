@@ -18,22 +18,24 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
     }
 
     public void login() {
-
+        System.out.println("test works");
     }
 
     public void deposit() {
-
+        System.out.println("test works");
     }
 
     public void withdraw() {
-
+        System.out.println("test works");
     }
 
     public void getBalance() {
-
+        System.out.println("test works");
     }
 
     public Statement getStatement() {
+
+        System.out.println("test works");
         return null;
     }
 
