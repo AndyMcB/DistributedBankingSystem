@@ -18,41 +18,71 @@ public class ATM {
 
     static OperationsInterface bank;
     static Registry registry;
+    static Scanner in = new Scanner(System.in);
 
-    public static void main(String[] args) throws RemoteException, NotBoundException {
+
+    public static void main(String[] args) throws RemoteException, NotBoundException { //TODO - implement session tracking
         String name = "BankServer";
 
         registry = LocateRegistry.getRegistry(8000);
 
         bank = (OperationsInterface) registry.lookup(name);
         if (bank != null)
-            System.out.println("bank created");
+            System.out.println("bank found");
 
-        while (true) {
-            System.out.println("Please enter an option: (deposit / withdraw / balance / statement / exit)");
-            Scanner input = new Scanner(System.in);
-            String operation = input.next();
+        System.out.println("Please enter your username and password: (In form username-password)");
+        String input = in.next();
+        String[] credentials = input.split("-");
+
+        boolean loggedIn = false;
+        try {
+            if (bank.login(credentials[0], credentials[1]))
+                loggedIn = true;
+
+            System.out.println("Successfully Logged In");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Error: Details entered incorrectly");
+        }
+
+
+        while (loggedIn) {
+
+            System.out.println("\nPlease enter an option: (deposit / withdraw / balance / statement / exit)");
+            String operation = in.next();
 
             switch (operation.trim().toLowerCase()) {
 
                 case "deposit":
                     System.out.println("Enter an amount to deposit");
-                    bank.deposit(0);
+                    input = in.next();
+                    try {
+                        System.out.println("Successfully deposited €" + input
+                                + "\nNew Balance: €" + bank.deposit(Double.parseDouble(input))); //Test
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid Input. Try again");
+                        break;
+                    }
                     break;
 
                 case "withdraw":
                     System.out.println("Enter an amount to withdraw");
-                    bank.withdraw(0);
+                    input = in.next();
+                    try {
+                        System.out.println("Successfully withdrew €" + input
+                                + "\nNew Balance: €" + bank.withdraw(Double.parseDouble(input)));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid Input. Try again");
+                        break;
+                    }
                     break;
 
                 case "balance":
-                    System.out.println("Your balance is €");
-                    bank.getBalance();
+                    System.out.println("Your balance is €" + bank.getBalance());
                     break;
 
                 case "statement":
                     System.out.println("Displaying statement:");
-                    bank.getStatement();
+                    System.out.println(bank.getStatement().toString());
                     break;
 
                 case "exit":
@@ -68,13 +98,11 @@ public class ATM {
                 default:
                     System.out.println("Input not recognised, please try again");
                     break;
-
-
             }
-
 
         }
     }
 }
+
 
 

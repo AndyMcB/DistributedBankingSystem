@@ -8,17 +8,19 @@ import java.util.Date;
  */
 public class Transaction implements Serializable {
 
-    int amount = 0;
+    double amount = 0;
     int accountNum = 0;
+    String transactionType = "";
     Date transDate = new Date();
 
-    public Transaction(int amt, int accNum){
+    public Transaction(double amt, int accNum, String type){
 
         this.amount = amt;
         this.accountNum = accNum;
+        this.transactionType = type;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
@@ -40,6 +42,22 @@ public class Transaction implements Serializable {
 
     public void setTransDate(Date transDate) {
         this.transDate = transDate;
+    }
+
+    public void setType(String type) {
+        this.transactionType = type;
+    }
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    public String toString(){
+        String info = "\nTransaction Type: " + this.transactionType
+                + "\nAmount: "+ this.amount
+                + "\nDate: "+ this.transDate + "\n";
+
+        return info;
     }
 
 }

@@ -6,31 +6,35 @@ import java.util.ArrayList;
 /**
  * Created by AMCBR on 13/02/2017.
  */
-public class Account implements Serializable{
+public class Account implements Serializable {
 
     static int accNum = 133800;
     static int counter = 0;
-    String name, password;
-    int balance, accountNum;
-    ArrayList<Transaction> transactions = new ArrayList<>();
+    private String name, password;
+    private int accountNum;
+    private double balance;
+    private ArrayList<Transaction> transactions = new ArrayList<>();
 
-    public Account(String nme, String pass, int bal){
+    public Account(String nme, String pass, double bal) {
         this.name = nme;
         this.password = pass;
         this.balance = bal;
-        this.accountNum = accNum+counter;
+        this.accountNum = accNum + counter;
         counter = counter++;
     }
 
-    public void depositTransaction(Transaction t){
+    public void depositTransaction(Transaction t) {
         this.balance = this.balance + t.getAmount();
-
+        transactions.add(t);
     }
 
-    public void withdrawTransaction(Transaction t){
+    public void withdrawTransaction(Transaction t) {
         this.balance = this.balance - t.getAmount();
-
+        if (this.balance < 0)
+            System.out.println("You are overdrawn.");
+        transactions.add(t);
     }
+
     public static int getAccNum() {
         return accNum;
     }
@@ -55,7 +59,7 @@ public class Account implements Serializable{
         this.password = pass;
     }
 
-    public int getBalance() {
+    public double getBalance() {
         return balance;
     }
 
@@ -71,6 +75,14 @@ public class Account implements Serializable{
         this.accountNum = accountNum;
     }
 
+    public ArrayList<Transaction> getTransactions() {
+        return transactions;
+    }
 
+    public Statement getStatement(){
+        Statement s = new Statement(this);
+
+        return s;
+    }
 
 }

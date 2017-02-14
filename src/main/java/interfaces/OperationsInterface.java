@@ -4,7 +4,6 @@ import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import bank.Account;
 import bank.Statement;
 
 /**
@@ -12,11 +11,16 @@ import bank.Statement;
  */
 public interface OperationsInterface extends Remote {
 
-    public Account login(String usr, String pass) throws RemoteException;
-    public void deposit(int amt) throws RemoteException;
-    public void withdraw(int amt) throws RemoteException;
-    public void getBalance() throws RemoteException;
-    public void exit() throws RemoteException, NotBoundException;
-    public Statement getStatement() throws RemoteException;
+    boolean login(String usr, String pass) throws RemoteException;
+
+    double deposit(double amt) throws RemoteException; //return new balance
+
+    double withdraw(double amt) throws RemoteException; // return new balance
+
+    double getBalance() throws RemoteException;
+
+    void exit() throws RemoteException, NotBoundException;
+
+    Statement getStatement() throws RemoteException;
 
 }

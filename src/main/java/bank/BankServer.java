@@ -15,59 +15,68 @@ import java.util.ArrayList;
 public class BankServer extends UnicastRemoteObject implements OperationsInterface {
 
     static String rmiName = "BankServer";
-    static private int rmiPort = 8000;
-    private ArrayList<Account> users = new ArrayList<Account>();
+    static private int rmiPort = 8000; //TODO-  add as CLI param
+    static Registry registry;
+    private ArrayList<Account> users = new ArrayList<>();
     static Account activeAcc;
+
 
     public BankServer() throws RemoteException {
         super();
 
-        Account a1 = new Account("user1","password1", 100);
-        Account a2 = new Account("user2","password2", 250);
-        Account a3 = new Account("user3","password3", 500);
+        Account a1 = new Account("user1", "pass1", 100);
+        Account a2 = new Account("user2", "pass2", 250);
+        Account a3 = new Account("user3", "pass3", 500);
 
         users.add(a1);
         users.add(a2);
         users.add(a3);
     }
 
-    public Account login(String usr, String pass) {
+    public boolean login(String usr, String pass) {
 
-        for(Account a : users)
-            if(a.getName().equals(usr) && a.getPassword().equals(pass))
-                return a;
+        for (Account a : users)
+            if (a.getName().equals(usr) && a.getPassword().equals(pass)) {
+                activeAcc = a;
+                return true;
+            }
 
-        return null;
-
+        return false;
     }
 
-    public void deposit(int amt) {
-        System.out.println("Old Balance: "+ activeAcc.getBalance());
-        Transaction t = new Transaction(amt, activeAcc.getAccountNum());
+    public double deposit(double amt) {
+        System.out.println("Deposit");
+
+        Transaction t = new Transaction(amt, activeAcc.getAccountNum(), "Deposit");
         activeAcc.depositTransaction(t);
-        System.out.println("New Balance: "+ activeAcc.getBalance());
+        return activeAcc.getBalance();
     }
 
-    public void withdraw(int amt) {
-        System.out.println("withdraw");
-        Transaction t = new Transaction(amt, activeAcc.getAccountNum());
+    public double withdraw(double amt) {
+        System.out.println("Withdraw");
+
+        Transaction t = new Transaction(amt, activeAcc.getAccountNum(), "Withdraw");
         activeAcc.withdrawTransaction(t);
-        System.out.println("Old Balance: "+ activeAcc.getBalance());
+        return activeAcc.getBalance();
     }
 
-    public void getBalance() {
-        System.out.println("balance");
-        System.out.println("Balance: "+ activeAcc.getBalance());
+    public double getBalance() {
+        System.out.println("Balance: " + activeAcc.getBalance());
+        return activeAcc.getBalance();
     }
 
     public Statement getStatement() {
-        System.out.println("statement");
-        //System.out.println(activeAcc.get());
 
-        return null;
+        return activeAcc.getStatement();
     }
 
     public void exit() throws RemoteException, NotBoundException {
+
+        // Unregister ourself
+        registry.unbind(rmiName);
+
+        // Unexport; this will also remove us from the RMI runtime
+        UnicastRemoteObject.unexportObject(this, true);
         System.exit(0);
     }
 
@@ -81,37 +90,23 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
             //Set up RMI server
 
             OperationsInterface bank = new BankServer();
-            Registry registry = LocateRegistry.createRegistry(rmiPort);
+            registry = LocateRegistry.createRegistry(rmiPort);
             registry.rebind(rmiName, bank);
             System.out.println("BankServer bound");
 
+//            //TODO - Factor out, login sent from client
+//            if ((bank.login(args[0], args[1])) == null) {
+//                System.out.println("Invalid Credentials!");
+//                System.exit(0);
+//
+//                //TODO - add option to resubmit username and password
+//            } else {
+//                activeAcc = bank.login(args[0], args[1]);
+//            }
 
-            checkArgs(args); //Makes sure there are enough args, if not will throw an error
-
-            if ((bank.login(args[0], args[1])) == null ) {
-                System.out.println("Invalid Credentials!");
-                System.exit(0);
-
-                //TODO - add option to resubmit username and password
-            }else{
-                activeAcc = bank.login(args[0], args[1]);
-            }
-
-        } catch (Exception  e1) {
+        } catch (Exception e1) {
             e1.printStackTrace();
         }
-    }
-
-    private static void checkArgs(String[] args) throws Exception {
-
-        for(int i=0; i<args.length; i++)
-            System.out.println(args[i] + "\n" + args.length);
-
-
-        if (args.length < 2){
-            throw new Exception(); //TODO - create custom error
-        }
-
     }
 
 }
