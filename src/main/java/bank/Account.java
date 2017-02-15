@@ -2,6 +2,7 @@ package bank;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by AMCBR on 13/02/2017.
@@ -33,14 +34,6 @@ public class Account implements Serializable {
         if (this.balance < 0)
             System.out.println("You are overdrawn.");
         transactions.add(t);
-    }
-
-    public static int getAccNum() {
-        return accNum;
-    }
-
-    public static void setAccNum(int accNum) {
-        Account.accNum = accNum;
     }
 
     public String getName() {
@@ -81,6 +74,12 @@ public class Account implements Serializable {
 
     public Statement getStatement(){
         Statement s = new Statement(this);
+
+        return s;
+    }
+
+    public Statement getStatement(Date d){
+        Statement s = new Statement(this, d);
 
         return s;
     }

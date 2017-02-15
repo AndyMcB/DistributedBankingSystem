@@ -2,6 +2,7 @@ package bank;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,8 +26,16 @@ public class Statement implements Serializable{
         this.startDate = getStartDate();
         this.endDate = getEndDate();
     }
+    public Statement(Account a, Date endDate){
+        this.accName = a.getName();
+        this.accNum = a.getAccountNum();
+        this.transactions = a.getTransactions();
+        this.startDate = getStartDate();
+        this.endDate = endDate;
+    }
 
-    public Date getStartDate(){ //Gets start data of transaction for the period of 3 months before the current date
+
+    public Date getEndDate(){ //Gets start data of transaction for the period of 3 months before the current date
 
         Date pastDate = new Date();
 
@@ -37,19 +46,20 @@ public class Statement implements Serializable{
         return c.getTime();
     } // returns start Date of bank.Statement, 3 months ago
 
-    //TODO - add ability for custom date
     public int getAccountNum(){return this.accNum;}  // returns account number associated with this statement
 
-    public Date getEndDate(){return new Date();} // returns end Date of bank.Statement i.e. the current date
+    public Date getStartDate(){return new Date();} // returns end Date of bank.Statement i.e. the current date
 
     public String getAccoutName(){return this.accName;} // returns name of account holder
 
     public List getTransations(){return this.transactions;}
 
-    public String toString(){ //TODO - Pretty print
+    public String toString(){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
         String info = "Account Number: " + accNum
                 + "\nAccount Name: " + accName
-                + "\nThis statement is for the period " + startDate + " until " + endDate
+                + "\nThis statement is for the period " + sdf.format(endDate) + " until " + sdf.format(startDate)
                 + "\nTransactions for this period:\n" + transactions.toString() ;
 
         return info;

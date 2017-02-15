@@ -1,6 +1,7 @@
 package bank;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -53,9 +54,11 @@ public class Transaction implements Serializable {
     }
 
     public String toString(){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
         String info = "\nTransaction Type: " + this.transactionType
                 + "\nAmount: "+ this.amount
-                + "\nDate: "+ this.transDate + "\n";
+                + "\nDate: "+ sdf.format(this.transDate) + "\n";
 
         return info;
     }

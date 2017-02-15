@@ -28,4 +28,16 @@ public class AccountTest {
         assertTrue(Double.compare(a.getBalance(), newBalance) == 0);
     }
 
+    @Test
+    public void withdrawTransactionTest(){
+        double before = a.getBalance();
+
+        double withdraw = 200.0;
+        double newBalance = before - withdraw;
+
+        Transaction t = new Transaction(withdraw, a.getAccountNum(), "Withdraw");
+        a.withdrawTransaction(t);
+        assertTrue(Double.compare(a.getBalance(), newBalance) == 0);
+    }
+
 }

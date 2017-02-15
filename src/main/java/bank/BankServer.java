@@ -8,16 +8,22 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Created by AMCBR on 06/02/2017.
  */
 public class BankServer extends UnicastRemoteObject implements OperationsInterface {
 
+    private static final long FIVE_MINUTES = 5*60*1000; //5 minutes in milliseconds
+
     static String rmiName = "BankServer";
-    static private int rmiPort = 8000; //TODO-  add as CLI param
+    static private int rmiPort;
     static Registry registry;
     private ArrayList<Account> users = new ArrayList<>();
+    private HashMap<UUID, SessionId> activeIds = new HashMap<>();
     static Account activeAcc;
 
 
@@ -65,11 +71,51 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
         return activeAcc.getBalance();
     }
 
+
     public Statement getStatement() {
 
         return activeAcc.getStatement();
     }
 
+    public Statement getStatement(Date d) {
+
+        return activeAcc.getStatement(d);
+    }
+
+
+    /***
+     * Return
+     * @param id
+     * @return true if session ID still valid, else false
+     * @throws RemoteException
+     */
+    public boolean checkSessionId(UUID id) throws RemoteException {
+
+        System.out.println("Active IDs" + activeIds.toString());
+        if(activeIds.containsKey(id)) {
+
+            System.out.println("");
+            SessionId s = activeIds.get(id);
+            long fiveAgo = System.currentTimeMillis() - FIVE_MINUTES;
+
+            System.out.println("Time Elapsed: " + (s.getTimeStamp() - fiveAgo));
+            if (s.getTimeStamp() < fiveAgo) {
+                activeIds.remove(s.getId());
+                return false; //No longer valid
+            }
+
+            return true;
+        }else{
+            activeIds.put(id, new SessionId(id));
+            return true;
+        }
+    }
+
+    /***
+     * Unbind our rmi Host from the registry, stop exporting and shut down the process
+     * @throws RemoteException
+     * @throws NotBoundException
+     */
     public void exit() throws RemoteException, NotBoundException {
 
         // Unregister ourself
@@ -85,6 +131,15 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
 
         String user, pass;
 
+        //parse port
+        try{
+            rmiPort = Integer.parseInt(args[0]);
+            System.out.println("RMI Port set to "+rmiPort);
+        }catch(ArrayIndexOutOfBoundsException e){
+            rmiPort = 1099; //Default to port 800
+            System.out.println("RMI Port defaulting to "+rmiPort);
+        }
+
         try {
 
             //Set up RMI server
@@ -93,16 +148,6 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
             registry = LocateRegistry.createRegistry(rmiPort);
             registry.rebind(rmiName, bank);
             System.out.println("BankServer bound");
-
-//            //TODO - Factor out, login sent from client
-//            if ((bank.login(args[0], args[1])) == null) {
-//                System.out.println("Invalid Credentials!");
-//                System.exit(0);
-//
-//                //TODO - add option to resubmit username and password
-//            } else {
-//                activeAcc = bank.login(args[0], args[1]);
-//            }
 
         } catch (Exception e1) {
             e1.printStackTrace();

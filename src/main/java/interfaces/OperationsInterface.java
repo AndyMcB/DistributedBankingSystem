@@ -3,6 +3,8 @@ package interfaces;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Date;
+import java.util.UUID;
 
 import bank.Statement;
 
@@ -19,8 +21,12 @@ public interface OperationsInterface extends Remote {
 
     double getBalance() throws RemoteException;
 
+    boolean checkSessionId(UUID id) throws RemoteException;
+
     void exit() throws RemoteException, NotBoundException;
 
     Statement getStatement() throws RemoteException;
+
+    Statement getStatement(Date d) throws RemoteException;
 
 }

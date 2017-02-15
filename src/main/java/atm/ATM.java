@@ -7,7 +7,11 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
+import java.util.UUID;
 
 import interfaces.OperationsInterface;
 
@@ -20,11 +24,11 @@ public class ATM {
     static Registry registry;
     static Scanner in = new Scanner(System.in);
 
-
-    public static void main(String[] args) throws RemoteException, NotBoundException { //TODO - implement session tracking
+//TODO - Comment Code, JavaDoc
+    public static void main(String[] args) throws RemoteException, NotBoundException {
         String name = "BankServer";
 
-        registry = LocateRegistry.getRegistry(8000);
+        registry = LocateRegistry.getRegistry(1099);
 
         bank = (OperationsInterface) registry.lookup(name);
         if (bank != null)
@@ -36,15 +40,18 @@ public class ATM {
 
         boolean loggedIn = false;
         try {
-            if (bank.login(credentials[0], credentials[1]))
+            if (bank.login(credentials[0], credentials[1])) {
                 loggedIn = true;
+                System.out.println("Successfully Logged In");
+            }else{
+                System.out.println("Details Incorrect");
+            }
 
-            System.out.println("Successfully Logged In");
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Error: Details entered incorrectly");
         }
 
-
+        UUID sessionId = UUID.randomUUID();
         while (loggedIn) {
 
             System.out.println("\nPlease enter an option: (deposit / withdraw / balance / statement / exit)");
@@ -82,25 +89,54 @@ public class ATM {
 
                 case "statement":
                     System.out.println("Displaying statement:");
-                    System.out.println(bank.getStatement().toString());
-                    break;
+                    System.out.println("Would you like to set a custom date for the statement to run to? (Y/N)");
+                    input = in.next();
+
+                    if(input.toLowerCase().trim().equals("y")){
+                        System.out.println("Enter custom date in form dd/mm/yyyy");
+                        input = in.next();
+
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        try {
+                            Date choice = sdf.parse(input);
+                            System.out.println(bank.getStatement(choice).toString());
+                            break;
+                        } catch (ParseException e) {
+                            System.out.println("We could not understand your input, using default");
+                            System.out.println(bank.getStatement().toString());
+                            break;
+                        }
+
+                    }else {
+                        if (input.toLowerCase().trim().equals("n")) {
+                            System.out.println("Using default of past 6 months");
+                            System.out.println(bank.getStatement().toString());
+                            break;
+                        } else {
+                            System.out.println("Input not recognised, using default");
+                            System.out.println(bank.getStatement().toString());
+                            break;
+                        }
+                    }
 
                 case "exit":
                     System.out.println("Have a nice day");
-
-                    try {
-                        bank.exit();
-                    } catch (java.rmi.UnmarshalException e) {
-                    }
-
                     System.exit(0);
+                    break;
+
+                case "exitbank":
+                    try { bank.exit(); } catch (RemoteException | NotBoundException e) {}
 
                 default:
                     System.out.println("Input not recognised, please try again");
                     break;
             }
 
+            loggedIn = bank.checkSessionId(sessionId);
         }
+
+        System.out.println("Session has expired. Please restart to complete any further action");
+        System.exit(0);
     }
 }
 
