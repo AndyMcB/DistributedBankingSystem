@@ -10,6 +10,10 @@ public class SessionId {
     private UUID id;
     private Long timeStamp;
 
+    /**
+     * Generate timeStanp to pair with UUID
+     * @param uuid
+     */
     public SessionId(UUID uuid){
 
         id = uuid;

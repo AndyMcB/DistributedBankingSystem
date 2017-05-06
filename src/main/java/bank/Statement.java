@@ -26,6 +26,12 @@ public class Statement implements Serializable{
         this.startDate = getStartDate();
         this.endDate = getEndDate();
     }
+
+    /**
+     * Sets custom end date for statement
+     * @param a
+     * @param endDate
+     */
     public Statement(Account a, Date endDate){
         this.accName = a.getName();
         this.accNum = a.getAccountNum();
@@ -34,7 +40,10 @@ public class Statement implements Serializable{
         this.endDate = endDate;
     }
 
-
+    /**
+     * Set end date of statement to 3 months in past
+     * @return
+     */
     public Date getEndDate(){ //Gets start data of transaction for the period of 3 months before the current date
 
         Date pastDate = new Date();

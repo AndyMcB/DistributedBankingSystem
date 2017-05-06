@@ -24,13 +24,26 @@ public class ATM {
     static Registry registry;
     static Scanner in = new Scanner(System.in);
 
-//TODO - Comment Code, JavaDoc
+    /**
+     * Attenpt to parse port to connect to, else defaults to 1099 and tries connecting
+     * Starts CLI interface to log in users and presents options for interacting with server
+     * @param args
+     * @throws RemoteException
+     * @throws NotBoundException
+     */
     public static void main(String[] args) throws RemoteException, NotBoundException {
         String name = "BankServer";
 
         registry = LocateRegistry.getRegistry(1099);
+        try{
+            registry = LocateRegistry.getRegistry(args[0]);
+            System.out.println("RMI Port set to "+args[0]);
+        }catch(ArrayIndexOutOfBoundsException e) {
+            registry = LocateRegistry.getRegistry(1099); //Default to port 800
+            System.out.println("RMI Port defaulting to " + 1099);
+        }
 
-        bank = (OperationsInterface) registry.lookup(name);
+            bank = (OperationsInterface) registry.lookup(name);
         if (bank != null)
             System.out.println("bank found");
 
@@ -52,7 +65,7 @@ public class ATM {
         }
 
         UUID sessionId = UUID.randomUUID();
-        while (loggedIn) {
+        while (loggedIn) { //User stays logged in until bank.checkSessionId() changes it to false
 
             System.out.println("\nPlease enter an option: (deposit / withdraw / balance / statement / exit)");
             String operation = in.next();
@@ -124,7 +137,7 @@ public class ATM {
                     System.exit(0);
                     break;
 
-                case "exitbank":
+                case "exitbank": //Secret test option to shut down the bank process remotely
                     try { bank.exit(); } catch (RemoteException | NotBoundException e) {}
 
                 default:

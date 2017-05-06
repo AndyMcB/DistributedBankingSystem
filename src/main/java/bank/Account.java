@@ -24,16 +24,44 @@ public class Account implements Serializable {
         counter = counter++;
     }
 
+    /**
+     * Creates a Transaction which deposits an amount
+     * @param t
+     */
     public void depositTransaction(Transaction t) {
         this.balance = this.balance + t.getAmount();
         transactions.add(t);
     }
 
+    /**
+     * Creates a Transaction which withdraws an amount
+     * @param t
+     */
     public void withdrawTransaction(Transaction t) {
         this.balance = this.balance - t.getAmount();
         if (this.balance < 0)
             System.out.println("You are overdrawn.");
         transactions.add(t);
+    }
+
+    /**
+     * Gets statement of transactions
+     * @return - Statement for Account
+     */
+    public Statement getStatement(){
+        Statement s = new Statement(this);
+
+        return s;
+    }
+
+    /**
+     * Gets statement of transactions back to specified Date
+     * @return - Statement for Account
+     */
+    public Statement getStatement(Date d){
+        Statement s = new Statement(this, d);
+
+        return s;
     }
 
     public String getName() {
@@ -71,17 +99,4 @@ public class Account implements Serializable {
     public ArrayList<Transaction> getTransactions() {
         return transactions;
     }
-
-    public Statement getStatement(){
-        Statement s = new Statement(this);
-
-        return s;
-    }
-
-    public Statement getStatement(Date d){
-        Statement s = new Statement(this, d);
-
-        return s;
-    }
-
 }

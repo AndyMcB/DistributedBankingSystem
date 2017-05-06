@@ -39,6 +39,12 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
         users.add(a3);
     }
 
+    /**
+     * checks if a users details exist, if yes then log them in
+     * @param usr - username
+     * @param pass - password
+     * @return true if logged in, else false
+     */
     public boolean login(String usr, String pass) {
 
         for (Account a : users)
@@ -50,6 +56,11 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
         return false;
     }
 
+    /***
+     * deposits an amount in the users balance
+     * @param amt
+     * @return new user balance
+     */
     public double deposit(double amt) {
         System.out.println("Deposit");
 
@@ -58,6 +69,11 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
         return activeAcc.getBalance();
     }
 
+    /**
+     * withdraws an amount from the user balance
+     * @param amt
+     * @return new user balance
+     */
     public double withdraw(double amt) {
         System.out.println("Withdraw");
 
@@ -66,17 +82,29 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
         return activeAcc.getBalance();
     }
 
+    /**
+     * Get current active user balance
+     * @return
+     */
     public double getBalance() {
         System.out.println("Balance: " + activeAcc.getBalance());
         return activeAcc.getBalance();
     }
 
-
+    /**
+     * Get statement of user transactions
+     * @return
+     */
     public Statement getStatement() {
 
         return activeAcc.getStatement();
     }
 
+    /**
+     * Get copy of user interaction back to desired date
+     * @param d
+     * @return
+     */
     public Statement getStatement(Date d) {
 
         return activeAcc.getStatement(d);
@@ -84,7 +112,7 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
 
 
     /***
-     * Return
+     * Check if the current UUID is still valid
      * @param id
      * @return true if session ID still valid, else false
      * @throws RemoteException
@@ -100,13 +128,13 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
 
             System.out.println("Time Elapsed: " + (s.getTimeStamp() - fiveAgo));
             if (s.getTimeStamp() < fiveAgo) {
-                activeIds.remove(s.getId());
+                activeIds.remove(s.getId()); //remove expired IDs
                 return false; //No longer valid
             }
 
             return true;
         }else{
-            activeIds.put(id, new SessionId(id));
+            activeIds.put(id, new SessionId(id)); //Add newly logged in users to the map
             return true;
         }
     }
@@ -127,16 +155,18 @@ public class BankServer extends UnicastRemoteObject implements OperationsInterfa
     }
 
 
+    /**
+     * Starts up rmi Server on specified port. If none available it defaults to 1099
+     * @param args
+     */
     public static void main(String[] args) { //CLI Args: Name, Password, Option
-
-        String user, pass;
 
         //parse port
         try{
             rmiPort = Integer.parseInt(args[0]);
             System.out.println("RMI Port set to "+rmiPort);
         }catch(ArrayIndexOutOfBoundsException e){
-            rmiPort = 1099; //Default to port 800
+            rmiPort = 1099; //Default to port 1099
             System.out.println("RMI Port defaulting to "+rmiPort);
         }
 
